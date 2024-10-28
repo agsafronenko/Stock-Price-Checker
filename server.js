@@ -1,14 +1,29 @@
 'use strict';
-require('dotenv').config();
+require('dotenv').config({ path: './sample.env' });
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
-
+const helmet = require('helmet');
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+const connectDB = require('./db.js').connectDB;
 
 const app = express();
+
+connectDB();
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+      },
+    },
+  })
+);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
